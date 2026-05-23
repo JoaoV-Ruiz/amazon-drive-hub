@@ -1,0 +1,55 @@
+---
+description: Regras de segurança do AmazonRepasse
+alwaysApply: true
+---
+
+# Segurança
+
+## Chaves do Supabase
+
+- `SUPABASE_SERVICE_ROLE_KEY` é usada **só no backend**.
+  Nunca importe em arquivos sob `frontend/`.
+- `VITE_SUPABASE_ANON_KEY` pode ir pro frontend (é pública por design).
+- Não logue tokens, chaves ou JWTs em `console.log` / `app.log`.
+
+## Placa do veículo (RN004)
+
+```ts
+// ❌ NUNCA
+return { id, brand, model, plate, price }; // rota pública
+
+// ✅ SEMPRE em rota pública
+return { id, brand, model, price }; // placa removida
+```
+
+Endpoints públicos devem usar um **DTO específico** que omite `plate`,
+em vez de "esquecer de selecionar".
+
+## Validação de entrada
+
+Todo handler de rota no backend valida o payload com **Zod** antes de
+chamar o service. Exceção: `GET` sem body.
+
+```ts
+// ✅
+const body = createCarSchema.parse(req.body);
+await carsService.create(body);
+```
+
+## Soft delete (RN003)
+
+```sql
+-- ❌
+DELETE FROM cars WHERE id = $1;
+
+-- ✅
+UPDATE cars SET deleted_at = NOW() WHERE id = $1;
+```
+
+Toda query de leitura padrão filtra `WHERE deleted_at IS NULL`.
+
+## Segredos no repositório
+
+- Arquivos `.env` reais nunca vão pro commit (`.gitignore` cuida).
+- Em PRs, nunca cole valor real de `service_role` no corpo ou em logs.
+- Use `.env.example` pra documentar quais variáveis existem.

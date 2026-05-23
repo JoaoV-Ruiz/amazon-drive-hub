@@ -1,0 +1,57 @@
+---
+description: Convenções do frontend React + Vite + Tailwind
+globs: frontend/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Frontend
+
+## Estrutura
+
+- **Pages**: uma pasta por rota principal em `src/pages/<Area>/<Nome>/index.tsx`.
+- **Components**: reutilizáveis em `src/components/`. Um componente por arquivo,
+  nome do arquivo = nome do componente (PascalCase).
+- **Hooks**: `src/hooks/use<Algo>.ts`.
+- **Services**: I/O em `src/services/`. Componentes não fazem `fetch` direto.
+- **Types**: contratos compartilhados em `src/types/index.ts`.
+
+## Chamadas à API
+
+Use o helper `api()` em vez de `fetch` direto. Ele já injeta o JWT do
+Supabase automaticamente:
+
+```ts
+import { api } from '@/services/api';
+
+const cars = await api<Car[]>('/cars');                    // autenticado
+const lead = await api<Lead>('/leads', {
+  method: 'POST',
+  body: JSON.stringify(payload),
+  authenticated: false,                                    // rota pública
+});
+```
+
+## Estilo
+
+- **Tailwind primeiro.** Só escreva CSS custom se for impossível com utilitários.
+- Não use cores hex hardcoded em JSX — referencie os tokens (`bg-brand`,
+  `text-neutral-700`) que vivem em `tailwind.config.js`.
+- Mobile first; use `md:`, `lg:` para breakpoints maiores.
+
+## Placa do veículo (RN004)
+
+```tsx
+// ❌ NUNCA em rotas /, /estoque, /carro/:id, /vendidos
+<span>{car.plate}</span>
+
+// ✅ Só renderize se há usuário autenticado com role admin ou partner
+{user && <span>{car.plate}</span>}
+```
+
+O backend já omite `plate` em endpoints públicos, mas o frontend deve
+ter defesa em profundidade.
+
+## Estado de carregamento
+
+Toda chamada async tem 3 estados explícitos: `loading`, `error`, `data`.
+Não renderize UI assumindo que `data` já chegou.

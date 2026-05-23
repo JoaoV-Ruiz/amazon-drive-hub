@@ -1,0 +1,38 @@
+---
+description: Princípios e regras de negócio absolutas do AmazonRepasse
+alwaysApply: true
+---
+
+# AmazonRepasse — núcleo
+
+## Princípios (do SDD)
+
+- Ser **utilizável desde a primeira versão**.
+- **Operação simples** para a equipe interna.
+- **Evitar complexidade desnecessária** — não construir o que não está no SDD.
+- Modelagem **preparada pra crescer**, mas sem antecipar futuro.
+
+## Antes de implementar
+
+1. Verifique se a feature está em `docs/01-visao-geral.md` (escopo).
+2. Confirme o papel envolvido em `docs/02-papeis-e-permissoes.md`.
+3. Leia a regra de negócio correspondente em `docs/03-regras-de-negocio.md`.
+4. Consulte o modelo em `docs/05-modelo-de-dados.md` se mexer no banco.
+
+Se algo no pedido **conflita** com os docs, **pergunte ao usuário antes**.
+Não "corrija" silenciosamente.
+
+## Regras de negócio (congeladas — RN001 a RN005)
+
+| ID | Resumo |
+|----|--------|
+| RN001 | Lead criado entra com `status='NOVO'`. **Sem** WhatsApp/email/CRM automático. |
+| RN002 | Vendido vai pra `/vendidos`; nunca some do banco. |
+| RN003 | **Soft delete sempre.** Nunca `DELETE FROM`. Use `UPDATE ... SET deleted_at = NOW()`. |
+| RN004 | Placa **obrigatória** no cadastro. **Nunca** retornar pra cliente público. |
+| RN005 | FIPE só na tela de cadastro do admin. Não aparece no anúncio. Preço final é manual. |
+
+## Idioma
+
+- Código, identificadores, nomes de arquivo: **inglês**.
+- Comentários, mensagens de erro pro usuário, commits, docs: **português**.

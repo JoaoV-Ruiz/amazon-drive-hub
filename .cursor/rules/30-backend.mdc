@@ -1,0 +1,56 @@
+---
+description: Convenções do backend Fastify + Supabase
+globs: backend/**/*.ts
+alwaysApply: false
+---
+
+# Backend
+
+## Estrutura de módulo
+
+```
+modules/<nome>/
+├── <nome>.routes.ts       → app.register; define rotas e preHandlers
+├── <nome>.controller.ts   → handlers; recebe req/reply; valida com schema
+├── <nome>.service.ts      → regras de negócio (RNs)
+├── <nome>.repository.ts   → acesso ao Supabase (única camada que importa o cliente)
+└── <nome>.schema.ts       → schemas Zod (request body, response)
+```
+
+Controller **nunca** fala direto com Supabase. Vai pelo service → repository.
+
+## Autenticação e autorização
+
+Rotas protegidas usam o middleware:
+
+```ts
+import { authenticate, requireRole } from '../../middlewares/auth.js';
+
+app.get(
+  '/admin/leads',
+  { preHandler: [authenticate, requireRole('admin')] },
+  handler,
+);
+```
+
+`req.user` fica disponível dentro do handler com `id`, `email`, `role`, `partnerId`.
+
+## Validação Zod
+
+```ts
+const body = createCarSchema.parse(req.body);
+```
+
+Erros do Zod viram 400. Não capture pra mascarar; deixe propagar pra
+error handler global (a configurar) tratar.
+
+## Supabase
+
+- Só o `repository` importa `import { supabase } from '../../database/supabase.js'`.
+- Toda query de leitura filtra `.is('deleted_at', null)` por padrão.
+- Inserts ignoram timestamps (o banco preenche via default/trigger).
+
+## Logs
+
+- Use `app.log.info/warn/error` (Fastify). Não use `console`.
+- Nunca logue tokens, senhas, ou a service_role key.
