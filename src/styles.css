@@ -64,8 +64,14 @@
 
 :root {
   --radius: 0.625rem;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --brand-green: oklch(0.305 0.041 180);
+  --brand-red: oklch(0.508 0.196 26);
+  --brand-gray: oklch(0.92 0.002 286);
+
   --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.18 0.02 180);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
