@@ -42,5 +42,5 @@ coverage/
 supabase/.branches
 supabase/.temp
 
-# Assets grandes (vídeos — hospedar em CDN separado)
-frontend/public/*.mp4
+# Vídeo original não comprimido (46 MB — excede limite do Cloudflare)
+frontend/public/0526.mp4

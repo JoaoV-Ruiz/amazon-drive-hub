@@ -1,15 +1,33 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 export function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.defaultMuted = true;
+      video.muted = true;
+      video.play().catch(() => {});
+    }
+  }, []);
+
   return (
     <section className="hero relative z-10 w-full h-[70vh] min-h-[500px] overflow-hidden clip-diagonal flex items-center bg-black text-white">
-      {/* Background Image */}
-      <div
-        className="hero-video absolute inset-0 w-full h-full bg-cover bg-center z-0"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1920')" }}
-      />
+      {/* Background Video */}
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="hero-video absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+      >
+        <source src="/hero.mp4" type="video/mp4" />
+      </video>
 
       {/* Dark Overlay for readability */}
       <div className="hero-overlay absolute inset-0 bg-black/45 z-10 pointer-events-none"></div>
